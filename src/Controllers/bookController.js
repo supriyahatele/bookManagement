@@ -1,5 +1,6 @@
 const bookModel = require("../Models/bookModel");
 const userModel = require("../Models/userModel");
+const mongoose = require('mongoose')
 
 
 const createBook = async function (req, res) {
@@ -17,6 +18,15 @@ const createBook = async function (req, res) {
 
 }
 
+// ========================================================================================================
+
+
+const isValid = function (value) {
+    if (typeof value === 'undefined' || value === null) return false
+    if (typeof value === 'string' && value.trim().length === 0) return false
+    return true;
+  }
+  
 
 
 const getBook = async function (req, res) {
@@ -32,15 +42,8 @@ const getBook = async function (req, res) {
             if (!mongoose.isValidObjectId(userId))
                 return res.status(400).send({ status: false, message: "Please enter valid userId " })
                 let uid = await userModel.findById(userId)
-
-            if (!uid) {
-                return res.status(400).send({ status: false, message: "userId doesn't exist" })
+             if (uid) filterData.userId = userId
             }
-            else {
-                filterData.userId = userId
-            }
-
-        }
 
         if (category) {
             if (isValid(category) && /^[a-zA-Z]{2,20}$/.test(category)) { filterData.category = category }

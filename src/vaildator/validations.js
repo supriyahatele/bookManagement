@@ -10,16 +10,16 @@ let pin = /^[1-9][0-9]{5}$/
 let matchName = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/
 let isbn = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/
 let yearFormet = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
-let validCity= /^[a-zA-Z',.\s-]{1,25}$/g
+let validCity= /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/
+
 
 
 
 let checkBody = async function (req, res, next) {
-
     try {
         let data = req.body
-        if (Object.keys(data).length == 0) { return res.status(400).send({ status: false, msg: "Bad request- Please enter details in the request Body " }) }
-
+        if (Object.keys(data).length == 0) 
+        { return res.status(400).send({ status: false, msg: "Bad request- Please enter details in the request Body " }) }
         next()
     }
     catch (err) {
