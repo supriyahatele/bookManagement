@@ -16,6 +16,7 @@ const createUser = async function (req, res) {
   }
 
 }
+// ===================================================[loginUser]================================================================
 
 const loginUser = async function (req, res) {
   try {
