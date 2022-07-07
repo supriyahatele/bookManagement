@@ -1,7 +1,7 @@
 const bookModel = require("../Models/bookModel");
 const userModel = require("../Models/userModel");
 const mongoose = require('mongoose')
-
+const reviewModel=require("../models/reviewModel")
 
 const createBook = async function (req, res) {
    
@@ -67,6 +67,27 @@ const getBook = async function (req, res) {
         res.status(500).send({ status: false, message: err.message });
     }
 }
-module.exports = {
-    createBook,getBook
+
+// =============================================[get-book-by-id]===========================================================================
+const getBookById= async function(req,res){
+
+    try{
+    const bookId = req.params.bookId
+    if (!mongoose.isValidObjectId(bookId)) { return res.status(400).send({ status: false, msg: "invalid bookid" }) }
+        
+    const checkbook= await bookModel.findOne({bookId})
+
+    if(!checkbook)  return res.status(404).send({ status: false, message: "No book found" })
+   const reviewData=[];
+   let finalREesult={ title:checkbook.title,excerpt:checkbook.excerpt,userId:checkbook.userId,category:checkbook.category,subcategory:checkbook.subcategory,isDeleted:checkbook.isDeleted,reviews:checkbook.reviews,releasedAt:checkbook.releasedAt,createdAt: checkbook.createdAt,updatedAt:checkbook.updatedAt,reviewData:reviewData}
+
+    res.status(200).send({ status: true, message: 'Books ', data:finalREesult});
+      
+    }catch(err) {
+        res.status(500).send({ status: false, message: err.message });
+    }
 }
+
+
+
+module.exports = { createBook,getBook,getBookById}
