@@ -2,15 +2,16 @@ const express = require('express');
 const router = express.Router();
 
 
-const boookControllers = require('../Controllers/bookController')
-const userControllers = require('../Controllers/userController')
-const validation = require("../vaildator/validations.js")
+const { createBook,getBook} = require('../Controllers/bookController')
+const { createUser,loginUser} = require('../Controllers/userController')
+const { checkBody,validUserModel,validBookModel} = require("../vaildator/validations.js")
 
 
-router.post('/register',validation.checkBody,userControllers.createUser)
-router.post("/login", validation.checkBody,userControllers.loginUser)
+router.post('/register',checkBody,validUserModel,createUser)
+router.post("/login",checkBody,loginUser)
+router.post('/books',checkBody,validBookModel,createBook)
 
-router.post('/books',validation.checkBody,boookControllers.createBook)
+router.get('/books',getBook)
 
 
 

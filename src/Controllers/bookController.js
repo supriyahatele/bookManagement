@@ -16,6 +16,54 @@ const createBook = async function (req, res) {
     }
 
 }
+
+
+
+const getBook = async function (req, res) {
+    try {
+        let data = req.query;
+        if (Object.keys(data).length == 0)
+            return res.status(400).send({ status: false, message: "Invalid Parameters" })
+
+        let filterData = { isDeleted: false }
+        const { userId, category, subcategory } = data
+
+        if (userId) {
+            if (!mongoose.isValidObjectId(userId))
+                return res.status(400).send({ status: false, message: "Please enter valid userId " })
+                let uid = await userModel.findById(userId)
+
+            if (!uid) {
+                return res.status(400).send({ status: false, message: "userId doesn't exist" })
+            }
+            else {
+                filterData.userId = userId
+            }
+
+        }
+
+        if (category) {
+            if (isValid(category) && /^[a-zA-Z]{2,20}$/.test(category)) { filterData.category = category }
+            else { return res.status(400).send({ status: false, message: "Please enter valid category name" }) }
+        }
+
+        if (subcategory) {
+            if (isValid(subcategory) && /^[a-zA-Z ]{2,20}$/.test(subcategory)) { filterData.subcategory = subcategory }
+            else { return res.status(400).send({ status: false, message: "Please enter valid subcategory name" }) }
+        }
+
+        let findData = await bookModel.find({ filterData }).select(
+            { title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 }).sort({ title: 1 })
+
+        if (findData.length == 0)
+            return res.status(404).send({ status: false, message: "No books found" })
+        else
+            res.status(200).send({ status: true, message: 'Books list', data: findData });
+    }
+    catch (err) {
+        res.status(500).send({ status: false, message: err.message });
+    }
+}
 module.exports = {
-    createBook
+    createBook,getBook
 }
