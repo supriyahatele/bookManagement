@@ -44,6 +44,4 @@ const loginUser = async function (req, res) {
     res.status(500).send({ msg: "Error", error: err.message })
   }
 }
-module.exports = {
-  createUser, loginUser
-}
+module.exports = {createUser, loginUser}
