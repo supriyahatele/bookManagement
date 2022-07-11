@@ -13,8 +13,8 @@ router.post('/books',checkBody,validBookModel,authentication,authoriseBook,creat
 
 router.get('/books',authentication,getBooks)
 
-router.get('/books/:bookId',authentication,authoriseParams,getBookById)
-
+router.get('/books/:bookId',authentication,authoriseParams,getBookById) 
+//router.get('/books/:bookId',getBookById)
 router.put('/books/:bookId',authentication,authoriseParams,updateBook)
 
 router.delete('/books/:bookId',authentication,authoriseParams,deleteBook)
