@@ -47,12 +47,12 @@ const getBooks = async function (req, res) {
             if (subcategory && validateString(subcategory)) { obj.subcategory = { $in: subcategory } }
 
         }
-        let find = await bookModel.find(obj).select({ ISBN: 0, subcategory: 0, createdAt: 0, updatedAt: 0, __v: 0, isDeleted: 0 }).sort({ title: 1 })
-
+        let find = await bookModel.find(obj).select({ ISBN: 0, subcategory: 0, createdAt: 0, updatedAt: 0, __v: 0, isDeleted: 0 })
+        find.sort(function(a,b){return a.title.localeCompare(b.title)})
         if (find.length == 0) {
             return res.status(404).send({ status: false, message: "No such book found" })
         }
-        res.status(200).send({ status: true, message: "Book all List", data: find })
+        res.status(200).send({ status: true, message: "Book List", data: find })
     } catch (error) {
         res.status(500).send({ status: false, message: error.message })
     }
@@ -63,18 +63,22 @@ const getBooks = async function (req, res) {
 const getBookById = async function (req, res) {
 
     try {
-         const bookId = req.params.bookId
+         let bookId = req.params.bookId
+         bookId=bookId.trim()
+
          if(!bookId){ return res.status(400).send({status:false,message:"BookId is require"})}
          if (!mongoose.isValidObjectId(bookId)) { return res.status(400).send({ status: false, msg: "invalid bookid" }) }
-
+       
          const checkbook = await bookModel.findById(bookId)
 
          if (!checkbook) return res.status(404).send({ status: false, message: "No book found" })
       //  const {title,excerpt,userId,category,subcategory,isDeleted,reviews,releasedAt,createdAt,updatedAt} =checkbook
         const reviewData = await reviewModel.find({bookId:bookId})
+        const countReview = await reviewModel.find({bookId:bookId}).count()
+
         let finalResult = {
             title: checkbook.title, excerpt: checkbook.excerpt, userId: checkbook.userId, category: checkbook.category, subcategory: checkbook.subcategory,
-            isDeleted: checkbook.isDeleted, reviews: checkbook.reviews, releasedAt: checkbook.releasedAt, createdAt: checkbook.createdAt, updatedAt: checkbook.updatedAt, reviewData: reviewData
+            isDeleted: checkbook.isDeleted, reviews:countReview , releasedAt: checkbook.releasedAt, createdAt: checkbook.createdAt, updatedAt: checkbook.updatedAt, reviewData: reviewData
         }
 
         return res.status(200).send({ status: true, message: 'Books ', data: finalResult });
@@ -157,4 +161,6 @@ const deleteBook = async function (req, res) {
     }
 }
 
-module.exports = { createBook, getBooks, getBookById, updateBook, deleteBook }
+
+
+module.exports = { createBook, getBooks, getBookById, updateBook, deleteBook ,validateString}
